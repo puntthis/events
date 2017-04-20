@@ -25,7 +25,7 @@ class Test extends CI_Controller {
 		}
 		
 		$curl = curl_init();
-		curl_setopt($curl, CURLOPT_URL, 'http://localhost/events'.$url_add_on);
+		curl_setopt($curl, CURLOPT_URL, $this->config->base_url().'events'.$url_add_on);
 		curl_setopt($curl, CURLOPT_USERPWD, 'demo:demo');
 		if ($this->uri->segment(3) == 'post')
 		{
