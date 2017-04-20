@@ -7,22 +7,22 @@ class Api extends CI_Controller {
 	{
     	parent::__construct();
     	$this->load->model('Api_user_m');
-    	$this->_authenticate();
+    	$this->_verify_user();
     }
 	
-	private function _encrypted_password($password)
-	{
-		$this->encryption->initialize(array('cipher' => 'aes-256', 'mode' => 'ctr'));
-		return $this->encryption->encrypt($password);
-	}
-	
-	private function _authenticate()
+	/**
+	* Check Username and Password for User
+	* 
+	* @return void
+	*/
+	private function _verify_user()
 	{
 		if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']))
 		{
-			$read = $this->Api_user_m->read($_SERVER['PHP_AUTH_USER'],$this->_encrypted_password($_SERVER['PHP_AUTH_PW']));
+			$user_verified = $this->Api_user_m->user_verified($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+			
 			//Invalid Username and/or Password
-			if (!$read->num_rows())
+			if (!$user_verified)
 			{
 				echo json_encode(array('errors' => array('Invalid Username and/or Password')));
 				exit;

@@ -1,8 +1,11 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Events extends CI_Controller {
-
+class Events extends Api {
+	
+	private $_arr_errors = array();
+	private $_result;
+	
 	public function __construct()
 	{
     	parent::__construct();
@@ -11,53 +14,60 @@ class Events extends CI_Controller {
 	
 	public function index()
 	{
-		$this->encryption->initialize(array('cipher' => 'aes-256', 'mode' => 'ctr'));
-		echo $this->encryption->encrypt('demo');
-		exit;
 		if ($_SERVER['REQUEST_METHOD'] == 'POST')
 		{
-			$arr_errors = array();
-			
 			//No id
-			if (!isset($this->uri->segment(2)))
+			if ($this->uri->segment(2) === NULL)
 			{
-				$arr_errors[] = 'Missing id';	
+				$this->_arr_errors[] = 'Missing id';	
 			}
 			
 			//No data
 			if (empty($this->input->post()))
 			{
-				$arr_errors[] = 'Missing data';
+				$this->_arr_errors[] = 'Missing data';
 			}
 			
-			
-			if (!empty($arr_errors))
+			//Check if id and data provided
+			if (!empty($this->_arr_errors))
 			{
-				$result = array('errors' => $arr_errors);
+				$this->_result = array('errors' => $this->_arr_errors);
 			}
-			else
+			else //id and data provided
 			{
-				$this->Calendar_event_m->update($this->uri->segment(2),$this->input->post());
-				$result = array('Record Updated');	
+				if ($this->Calendar_event_m->update($this->uri->segment(2),$this->input->post()))
+				{
+					$this->_result = ($read = $this->Calendar_event_m->read_by_id($this->uri->segment(2))) ? $read->row_array() : array('errors' => array('Database Read Error'));
+				}
+				else
+				{
+					$this->_result = array('errors' => array('Database Update Error'));
+				}
 			}
-			
 		}
 		else //GET
 		{
-			$read = isset($this->uri->segment(2)) ? $this->Calendar_event_m->read($this->uri->segment(2)) : $this->Calendar_event_m->read();
+			$read = $this->uri->segment(2) !== NULL ? $this->Calendar_event_m->read_by_id($this->uri->segment(2)) : $this->Calendar_event_m->read($this->input->get());
 			
-			
-			if (isset($this->uri->segment(2)))
+			if ($read)
 			{
-				$read = $this->Calendar_event_m->read($this->uri->segment(2));
+				if ($read->num_rows())
+				{
+					$this->_result = $this->uri->segment(2) !== NULL ? $read->row_array() : $read->result_array();
+				}
+				else
+				{
+					$this->_result = array('response_message' => 'No Results');
+				}
 			}
 			else
 			{
-				$read = 
+				$this->_result = array('errors' => array('Database Read Error'));
 			}
 		}
 		
-		json_encode($result);
+		//Display JSON response
+		echo json_encode($this->_result, JSON_NUMERIC_CHECK);
 	}
 	
 }
