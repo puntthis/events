@@ -10,7 +10,7 @@ class Events extends Api {
 	{
 		parent::__construct();
 		$this->load->model('Calendar_event_m');
-    }
+	}
 	
 	public function index()
 	{
