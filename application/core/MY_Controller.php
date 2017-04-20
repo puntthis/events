@@ -5,11 +5,11 @@ class Api extends CI_Controller {
 
 	public function __construct()
 	{
-    	parent::__construct();
-    	$this->load->model('Api_user_m');
-    	$this->_verify_user();
-    }
-	
+		parent::__construct();
+		$this->load->model('Api_user_m');
+		$this->_verify_user();
+	}
+		
 	/**
 	* Check Username and Password for User
 	* 

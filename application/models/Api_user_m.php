@@ -4,9 +4,9 @@ class Api_user_m extends MY_Model {
 
 	public function __construct()
 	{
-        parent::__construct();
-    }
-	
+		parent::__construct();
+	}
+			
 	/**
 	* Verify the Username and Password for the user
 	* 
