@@ -13,3 +13,8 @@ Options All -Indexes
 	# can be sent to index.php, and everything works as normal.
 	ErrorDocument 404 /index.php
 </IfModule>
+
+<IfModule mod_rewrite.c>
+	RewriteEngine on
+	RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
+</IfModule>
