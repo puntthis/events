@@ -8,8 +8,8 @@ class Events extends Api {
 	
 	public function __construct()
 	{
-    	parent::__construct();
-    	$this->load->model('Calendar_event_m');
+		parent::__construct();
+		$this->load->model('Calendar_event_m');
     }
 	
 	public function index()
